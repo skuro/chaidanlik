@@ -1,4 +1,4 @@
-# chai
+# chaidanlink
 
 A [Heroku](http://www.heroku.com) web app using Compojure.
 
@@ -15,7 +15,7 @@ To start a local web server for development you can either eval the
 commented out forms at the bottom of `web.clj` from your editor or
 launch from the command line:
 
-    $ lein run -m chai.web
+    $ lein run -m chaidanlink.web
 
 Initialize a git repository for your project.
 
@@ -27,9 +27,9 @@ You'll need the [heroku toolbelt](https://toolbelt.herokuapp.com)
 installed to manage the heroku side of your app. Once it's installed,
 get the app created:
 
-    $ heroku apps:create chai
-    Creating chai... done, stack is cedar
-    http://chai.herokuapp.com/ | git@heroku.com:chai.git
+    $ heroku apps:create chaidanlink
+    Creating chaidanlink... done, stack is cedar
+    http://chaidanlink.herokuapp.com/ | git@heroku.com:chai.git
     Git remote heroku added
 
 You can deploy the skeleton project immediately:
@@ -44,14 +44,14 @@ You can deploy the skeleton project immediately:
            Downloading: leiningen-2.0.0-preview7-standalone.jar
     [...]
     -----> Launching... done, v3
-           http://chai.herokuapp.com deployed to Heroku
+           http://chaidanlink.herokuapp.com deployed to Heroku
 
-    To git@heroku.com:chai.git
+    To git@heroku.com:chaidanlink.git
      * [new branch]      master -> master
 
 It's live! Hit it with `curl`:
 
-    $ curl http://chai.herokuap.com
+    $ curl http://chaidanlink.herokuap.com
     ["Hello" :from Heroku]
 
 The cookie-backed session store needs a session secret configured for encryption:
