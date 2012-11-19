@@ -1,4 +1,4 @@
-# chaidanlink
+# chaidanlik
 
 A [Heroku](http://www.heroku.com) web app using Compojure.
 
@@ -15,7 +15,7 @@ To start a local web server for development you can either eval the
 commented out forms at the bottom of `web.clj` from your editor or
 launch from the command line:
 
-    $ lein run -m chaidanlink.web
+    $ lein run -m chaidanlik.web
 
 Initialize a git repository for your project.
 
@@ -27,7 +27,7 @@ You'll need the [heroku toolbelt](https://toolbelt.herokuapp.com)
 installed to manage the heroku side of your app. Once it's installed,
 get the app created:
 
-    $ heroku apps:create chaidanlink
+    $ heroku apps:create chaidanlik
     Creating chaidanlink... done, stack is cedar
     http://chaidanlink.herokuapp.com/ | git@heroku.com:chai.git
     Git remote heroku added
@@ -51,7 +51,7 @@ You can deploy the skeleton project immediately:
 
 It's live! Hit it with `curl`:
 
-    $ curl http://chaidanlink.herokuap.com
+    $ curl http://chaidanlik.herokuap.com
     ["Hello" :from Heroku]
 
 The cookie-backed session store needs a session secret configured for encryption:
