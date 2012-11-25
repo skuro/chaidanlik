@@ -15,7 +15,7 @@ To start a local web server for development you can either eval the
 commented out forms at the bottom of `web.clj` from your editor or
 launch from the command line:
 
-    $ lein run -m chaidanlink.web
+    $ lein run -m chai.web
 
 Initialize a git repository for your project.
 

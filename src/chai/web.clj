@@ -10,27 +10,29 @@
             [ring.middleware.basic-authentication :as basic]
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]
-            [clostache.parser :as stashe]))
+            [clostache.parser :as stashe]
+            [chai.danlik :as danlik]))
 
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
   (= [user pass] [(env :repl-user false) (env :repl-password false)]))
+
+(defn response [f template]
+  (let [context {:danlik (f)}]
+    {:status 200
+     :headers {"Content-Type" "text/html"}
+     :body (stashe/render-resource template context)}))
 
 (def ^:private drawbridge
   (-> (drawbridge/ring-handler)
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(defn print-timer []
-  (stashe/render-resource "templates/index.html.mustache" {}))
-
 (defroutes app
   (ANY "/repl" {:as req}
        (drawbridge req))
-  (GET "/" []
-       {:status 200
-        :headers {"Content-Type" "text/html"}
-        :body (print-timer)})
+  (GET "/" [] (response danlik/get-danlik "templates/index.html.mustache"))
+  (POST "/" [] (response danlik/start-brew "templates/index.html.mustache"))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 
