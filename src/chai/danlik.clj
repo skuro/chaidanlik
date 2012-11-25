@@ -22,6 +22,12 @@
   []
   (delayed 0))
 
+(defn elapsed?
+  "Returns true if the provided date is in the past"
+  [date]
+  (time/after? (force/to-date-time (now))
+               (force/to-date-time date)))
+
 (defn cleanup
   "Clears the elapsed counters from the provided danlik"
   [danlik]
@@ -30,12 +36,6 @@
                                [:time :brew]))]
     (apply dissoc danlik removables)
     danlik))
-
-(defn elapsed?
-  "Returns true if the provided date is in the past"
-  [date]
-  (time/after? (force/to-date-time (now))
-               (force/to-date-time date)))
 
 (defn- get-danlik-impl
   "In-memory implementation of a chaidanlik read."
