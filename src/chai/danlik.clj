@@ -1,6 +1,5 @@
 (ns chai.danlik
-  (:require [clj-time.core :as time]
-            [clj-time.coerce :as force]))
+  (:require [chai.time :as time]))
 
 (def ^:dynamic *danlik*
   "The string ID of the chaidanlik to consider in all CRUD operations. Override using clojure.core/binding. Defaults to 'Backbaser R&D'"
@@ -10,31 +9,11 @@
   "All the available chaidanlik. Currently only one is supported, but you never know.. Currently implements an in-memory store / cache. Restart the app and you loose the state."
   (atom {*danlik* {:label *danlik*}}))
 
-(defn delayed
-  "Returns the timestamp (in long) of the moment mins minutes from now"
-  ([from mins]
-     (force/to-long (time/plus (force/from-long from) (time/minutes mins))))
-  ([mins]
-      (force/to-long (-> mins
-                         time/minutes
-                         time/from-now))))
-
-(defn now
-  "Returns the timestamp of now"
-  []
-  (delayed 0))
-
-(defn elapsed?
-  "Returns true if the provided date is in the past"
-  [date]
-  (time/after? (force/to-date-time (now))
-               (force/to-date-time date)))
-
 (defn cleanup
   "Clears the elapsed counters from the provided danlik"
   [danlik]
   (if-let [removables (seq
-                       (filter #(elapsed? (% danlik))
+                       (filter #(time/elapsed? (% danlik))
                                [:time :brew]))]
     (apply dissoc danlik removables)
     danlik))
@@ -49,7 +28,7 @@
   []
   (if-let [existing (get-danlik-impl)]
     existing
-    (swap! stock assoc *danlik* {:time (now)
+    (swap! stock assoc *danlik* {:time (time/now)
                                  :label *danlik*})))
 
 (defn delete
@@ -76,22 +55,7 @@
   "Starts the chaidanlik. If no parameters are passed, the water heating is started"
   ([] (start :time))
   ([key] (start :time (time/now)))
-  ([key time] (update-danlik key (delayed time 25))))
-
-(defn parse-time
-  "Accepts a string like '12:12' and returns a date describing today with the provided hours and minutes"
-  [t]
-  (try
-    (let [[hh mm] (map #(Integer/parseInt %) (clojure.string/split t #":"))
-          base (time/to-time-zone (time/now)
-                                  (time/time-zone-for-offset 1))]
-      (-> base
-          (.withHourOfDay hh)
-          (.withMinuteOfHour mm)
-          force/to-long))
-    (catch Exception e
-      (.printStackTrace e)
-      nil)))
+  ([key time] (update-danlik key (time/delayed time 25))))
 
 (defn start-brew 
   "Starts brewing the tea"
@@ -99,6 +63,6 @@
      (start :brew))
   ([[stamp]]
      (cleanup
-      (if-let [t (parse-time stamp)]
+      (if-let [t (time/parse-time stamp)]
         (start :brew t)
         (start :brew)))))
