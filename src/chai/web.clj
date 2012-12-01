@@ -17,8 +17,8 @@
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
   (= [user pass] [(env :repl-user false) (env :repl-password false)]))
 
-(defn response [f template]
-  (let [context {:danlik (f)}]
+(defn response [f template & args]
+  (let [context {:danlik (f args)}]
     {:status 200
      :headers {"Content-Type" "text/html"}
      :body (stashe/render-resource template context)}))
@@ -32,7 +32,7 @@
   (ANY "/repl" {:as req}
        (drawbridge req))
   (GET "/" [] (response danlik/get-danlik "templates/index.html.mustache"))
-  (POST "/" [] (response danlik/start-brew "templates/index.html.mustache"))
+  (POST "/" [stamp] (response danlik/start-brew "templates/index.html.mustache" stamp))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 

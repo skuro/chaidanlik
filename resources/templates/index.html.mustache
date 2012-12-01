@@ -2,6 +2,21 @@
 <html>
 <head>
 <script>
+function init(stamp){
+  var timer = document.getElementById('timer');
+  if (timer != null) {
+    initTimer(timer);
+  } else {
+    startTime(stamp);
+  }
+}
+
+function initTimer(elem){
+  var now = new Date();
+  var nowString = now.getHours() + ":" + now.getMinutes();
+  elem.setAttribute("value", nowString);
+}
+
 function startTime(stamp){
   var elem = document.getElementById('txt');
   var due  = new Date(stamp);
@@ -61,7 +76,7 @@ function countdown(d){
 </script>
 </head>
 
-<body onload="startTime({{danlik.brew}})">
+<body onload="init({{danlik.brew}})">
 
 {{#danlik}}
 
@@ -71,8 +86,11 @@ function countdown(d){
 
 {{^danlik.brew}}
 <h3>The teapot is off</h3>
-<form method="POST" id="start" action="/">
-  <input type="submit" value="start" />
+<form method="post" id="started-at" action="/">
+  <p>I started it at: 
+    <input type="time" name="stamp" id="timer" />
+    <input type="submit" value="set" />
+  </p>
 </form>
 {{/danlik.brew}}
 

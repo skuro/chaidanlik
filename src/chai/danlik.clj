@@ -12,10 +12,12 @@
 
 (defn delayed
   "Returns the timestamp (in long) of the moment mins minutes from now"
-  [mins]
-  (force/to-long (-> mins
-                     time/minutes
-                     time/from-now)))
+  ([from mins]
+     (force/to-long (time/plus from (time/minutes mins))))
+  ([mins]
+      (force/to-long (-> mins
+                         time/minutes
+                         time/from-now))))
 
 (defn now
   "Returns the timestamp of now"
@@ -40,16 +42,13 @@
 (defn- get-danlik-impl
   "In-memory implementation of a chaidanlik read."
   []
-  (println "Getting the danlik")
   (cleanup (@stock *danlik*)))
 
 (defn create
   "In-memory implementation of a chaidanlink create"
   []
   (if-let [existing (get-danlik-impl)]
-    (do
-      (println "Danlik already exists:" existing)
-      existing)
+    existing
     (swap! stock assoc *danlik* {:time (now)
                                  :label *danlik*})))
 
@@ -61,7 +60,7 @@
 
 (defn get-danlik
   "Delegating implementation of a chaidanlik read"
-  []
+  [_]
   (get-danlik-impl))
 
 (defn update-danlik
@@ -76,11 +75,26 @@
 (defn start
   "Starts the chaidanlik. If no parameters are passed, the water heating is started"
   ([] (start :time))
-  ([key]
-     (let [start-time (delayed 25)]
-       (update-danlik key start-time))))
+  ([key] (start :time (delayed 25)))
+  ([key time] (update-danlik key time)))
+
+(defn parse-time
+  "Accepts a string like '12:12' and returns a date describing today with the provided hours and minutes"
+  [t]
+  (try
+    (let [[hh mm] (map #(Integer/parseInt %) (clojure.string/split t #":"))
+          base (time/now)]
+      (-> base
+          (.withHourOfDay hh)
+          (.withMinuteOfHour mm)))
+    (catch Exception e
+      nil)))
 
 (defn start-brew 
   "Starts brewing the tea"
-  []
-  (start :brew))
+  ([]
+     (start :brew))
+  ([[stamp]]
+     (if-let [t (parse-time stamp)]
+       (start :brew (delayed t 25))
+       (start :brew))))
