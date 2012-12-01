@@ -88,6 +88,7 @@
           (.withHourOfDay hh)
           (.withMinuteOfHour mm)))
     (catch Exception e
+      (.printStackTrace e)
       nil)))
 
 (defn start-brew 
@@ -95,6 +96,7 @@
   ([]
      (start :brew))
   ([[stamp]]
-     (if-let [t (parse-time stamp)]
-       (start :brew (delayed t 25))
-       (start :brew))))
+     (cleanup
+      (if-let [t (parse-time stamp)]
+        (start :brew t)
+        (start :brew)))))
