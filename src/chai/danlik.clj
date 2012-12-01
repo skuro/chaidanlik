@@ -13,7 +13,7 @@
 (defn delayed
   "Returns the timestamp (in long) of the moment mins minutes from now"
   ([from mins]
-     (force/to-long (time/plus from (time/minutes mins))))
+     (force/to-long (time/plus (force/from-long from) (time/minutes mins))))
   ([mins]
       (force/to-long (-> mins
                          time/minutes
@@ -75,18 +75,20 @@
 (defn start
   "Starts the chaidanlik. If no parameters are passed, the water heating is started"
   ([] (start :time))
-  ([key] (start :time (delayed 25)))
-  ([key time] (update-danlik key time)))
+  ([key] (start :time (time/now)))
+  ([key time] (update-danlik key (delayed time 25))))
 
 (defn parse-time
   "Accepts a string like '12:12' and returns a date describing today with the provided hours and minutes"
   [t]
   (try
     (let [[hh mm] (map #(Integer/parseInt %) (clojure.string/split t #":"))
-          base (time/now)]
+          base (time/to-time-zone (time/now)
+                                  (time/time-zone-for-offset 1))]
       (-> base
           (.withHourOfDay hh)
-          (.withMinuteOfHour mm)))
+          (.withMinuteOfHour mm)
+          force/to-long))
     (catch Exception e
       (.printStackTrace e)
       nil)))
